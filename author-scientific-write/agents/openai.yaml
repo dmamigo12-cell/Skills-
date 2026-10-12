@@ -1,0 +1,4 @@
+interface:
+  display_name: "Научный текст моим стилем"
+  short_description: "Новые научные тексты по авторскому профилю"
+  default_prompt: "Используй $author-scientific-write и напиши научный фрагмент по моим тезисам."
