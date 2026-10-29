@@ -9,6 +9,13 @@ def check(raw, reference=None):
     m=measure(raw,True)
     signals=[]
     prose=' '.join(x['text'] for x in m.get('sentence_records',[]))
+    designation=r'(?:(?:[0-9]+[-‐‑])*[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]*(?:[-‐‑][A-Za-z0-9]+)*|[А-ЯЁ]{2,}[0-9]*)'
+    russian_word=r'[А-ЯЁ]?[а-яё]{2,}'
+    phrase_pattern=rf'(?<![\w/\\])(?:{designation}[-‐‑]{russian_word}|{russian_word}[-‐‑]{designation})(?![\w/\\])'
+    m['hyphenated_phrase_review_matches']=list(dict.fromkeys(
+        match.group() for match in re.finditer(phrase_pattern,prose)))
+    if m['hyphenated_phrase_review_matches']:
+        signals.append('Review hyphenated phrases: separate designations and Russian words; preserve exact names and standard compound-word spelling.')
     if m['words']<300: signals.append('Short sample: distributional comparisons are unstable.')
     limits={'sentence_mean':(15,21),'sentence_median':(14,20),'sentence_p90':(24,34),'sentence_sd':(5,10.5),
             'sentences_under_8_pct':(0,10),'sentences_over_40_pct':(0,2)}
