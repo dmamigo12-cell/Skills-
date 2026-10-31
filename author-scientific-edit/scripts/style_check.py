@@ -23,7 +23,7 @@ def check(raw, reference=None):
         for k,(lo,hi) in limits.items():
             if not lo<=m[k]<=hi: signals.append(f'Review {k}: {m[k]} outside orientation {lo}..{hi}.')
     if re.search(r'[—–]|\s-\s',prose):
-        signals.append('Review dashes: replace punctuation dashes through syntax; preserve mathematical signs and term hyphens.')
+        signals.append('Review dashes in context: preserve required en dashes in variable explanations after formulas, mathematical signs and term hyphens; rewrite other punctuation dashes through syntax.')
     suspects=[r'не претенду\w*',r'не следует воспринимать',r'всего лишь',r'не [^.!?]{1,100}, а (?:лишь |только )?']
     m['rhetoric_review_matches']=[match.group() for pat in suspects for match in re.finditer(pat,prose,re.I)]
     if m['rhetoric_review_matches']: signals.append('Review contrasting/apologetic wording in context; do not delete technical negatives automatically.')
