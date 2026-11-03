@@ -3,12 +3,19 @@ import argparse
 import json
 import re
 from pathlib import Path
-from analyze_style import measure
+from analyze_style import measure, paragraphs, sentences
 
 def check(raw, reference=None):
     m=measure(raw,True)
     signals=[]
     prose=' '.join(x['text'] for x in m.get('sentence_records',[]))
+    semicolon_text=re.sub(r'```.*?```','',raw,flags=re.S)
+    semicolon_text=re.sub(r'`[^`\n]*`','',semicolon_text)
+    m['semicolon_sentence_review_matches']=[
+        sentence for paragraph in paragraphs(semicolon_text)
+        for sentence in sentences(paragraph) if ';' in sentence]
+    if m['semicolon_sentence_review_matches']:
+        signals.append('Точка с запятой внутри предложения. Разделите его на два самостоятельных предложения. Точные цитаты и математические разделители проверяйте по контексту.')
     designation=r'(?:(?:[0-9]+[-‐‑])*[A-Za-z0-9]*[A-Za-z][A-Za-z0-9]*(?:[-‐‑][A-Za-z0-9]+)*|[А-ЯЁ]{2,}[0-9]*)'
     russian_word=r'[А-ЯЁ]?[а-яё]{2,}'
     phrase_pattern=rf'(?<![\w/\\])(?:{designation}[-‐‑]{russian_word}|{russian_word}[-‐‑]{designation})(?![\w/\\])'
